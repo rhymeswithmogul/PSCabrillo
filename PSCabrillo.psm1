@@ -43,7 +43,9 @@ Function ConvertFrom-Cabrillo {
             ValueFromRemainingArguments)]
         [Alias("Path")]
         [ValidateScript({Test-Path -Path $_ -PathType Leaf})]
-        [System.IO.File] $CabrilloFile
+        [System.IO.File] $CabrilloFile,
+
+        [Switch] $NoTransmitterIDCheck
     )
 
     Begin
@@ -71,13 +73,11 @@ Function ConvertFrom-Cabrillo {
         If ($line -eq 0) {
             If ($KeyValuePair[0] -ne "START-OF-LOG")
             {
-                Write-Error -Message "This Cabrillo file is not well-formed.  Expected on line 1: START-OF-LOG" -Category InvalidData
-                Exit
+                Throw [System.IO.InvalidDataException]::new("This Cabrillo file is not well-formed.  Expected on line 1: START-OF-LOG")
             }
             ElseIf ($KeyValuePair[1] -ne "3.0")
             {
-                Write-Error -Message "This module can only parse Cabrillo 3.0 log files." -Category NotImplemented
-                Exit
+                Throw [System.NotImplementedException]::new("This module can only parse Cabrillo 3.0 log files.")
             }
             Else
             {
@@ -95,8 +95,7 @@ Function ConvertFrom-Cabrillo {
         {
             If ($KeyValuePair[0] -ne "END-OF-LOG")
             {
-                Write-Error -Message "This Cabrillo file is not well-formed.  Expected on $($line + 1): END-OF-LOG" -Category InvalidData
-                Exit
+                Throw [System.IO.InvalidDataException]::new("This Cabrillo file is not well-formed.  Expected on $($line + 1): END-OF-LOG")
             }
         }
 
@@ -120,8 +119,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose "This contest was $($KeyValuePair[1])."
                     If ($KeyValuePair[1] -NotMatch [RegEx]::"[A-Z0-9\-]+")
                     {
-                        Write-Error -Category InvalidData -Message "The contest value is invalid."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The contest value is invalid.")
                     }
                     $MemberProperties = @{
                         "NotePropertyName"  = "Contest"
@@ -135,8 +133,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose "This category was $($KeyValuePair[1])."
                     If ($KeyValuePair[1] -NotMatch [RegEx]::"(NON\-)?ASSISTED")
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-ASSISTED was not an acceptable value."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-ASSISTED was not an acceptable value.")
                     }
                     $MemberProperties = @{
                         "NotePropertyName"  = "CategoryAssisted"
@@ -156,8 +153,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose "The band is $($KeyValuePair[1])."
                     If ($KeyValuePair[1] -NotIn $AcceptableBands)
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-BAND was not an accepted value."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-BAND was not an accepted value.")
                     }
                     $MemberProperties = @{
                         "NotePropertyName"  = "CategoryBand"
@@ -172,8 +168,7 @@ Function ConvertFrom-Cabrillo {
                     If ($KeyValuePair[1] -NotIn @("CW",  "DIGI", "FM", "RTTY",
                                                 "SSB", "MIXED"))
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-MODE was not an accepted mode."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-MODE was not an accepted mode.")
                     }
                     $MemberProperties = @{
                         "NotePropertyName"  = "CategoryMode"
@@ -186,8 +181,7 @@ Function ConvertFrom-Cabrillo {
                 {
                     If ($KeyValuePair[1] -NotIn @("SINGLE-OP", "MULTI-OP", "CHECKLOG"))
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-OPERATOR was not an accepted operator."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-OPERATOR was not an accepted operator.")
                     }
                     Write-Verbose "The mode is $($KeyValuePair[1])."
                     $MemberProperties = @{
@@ -201,8 +195,7 @@ Function ConvertFrom-Cabrillo {
                 {
                     If ($KeyValuePair[1] -NotIn @("HIGH", "LOW", "QRP"))
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-POWER was not an accepted operator."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-POWER was not an accepted operator.")
                     }
                     Write-Verbose "The power is $($KeyValuePair[1])."
                     $MemberProperties = @{
@@ -220,8 +213,7 @@ Function ConvertFrom-Cabrillo {
                                 "EXPEDITION")
                     If ($KeyValuePair[1] -NotIn $AcceptableStations)
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-STATION was not an accepted type."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-STATION was not an accepted type.")
                     }
                     Write-Verbose "The station type is $($KeyValuePair[1])."
                     $MemberProperties = @{
@@ -235,8 +227,7 @@ Function ConvertFrom-Cabrillo {
                 {
                     If ($KeyValuePair[1] -NotMatch "[6,12,24]\-HOURS")
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-TIME was not an accepted period."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-TIME was not an accepted period.")
                     }
                     Write-Verbose "The period is $($KeyValuePair[1])."
                     $MemberProperties = @{
@@ -251,8 +242,7 @@ Function ConvertFrom-Cabrillo {
                     If ($KeyValuePair[1] -NotIn @("ONE", "TWO", "LIMITED",
                                                 "UNLIMITED", "SWL"))
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-TRANSMITTER was not an accepted value."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-TRANSMITTER was not an accepted value.")
                     }
                     Write-Verbose "The transmitter type is $($KeyValuePair[1])."
                     $MemberProperties = @{
@@ -267,8 +257,7 @@ Function ConvertFrom-Cabrillo {
                     If ($KeyValuePair[1] -NotIn @("CLASSIC", "ROOKIE", "OVER-50",
                                                 "TB-WIRES", "NOVICE-TECH"))
                     {
-                        Write-Error -Category InvalidData -Message "The value for CATEGORY-OVERLAY was not an accepted overlay."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The value for CATEGORY-OVERLAY was not an accepted overlay.")
                     }
                     Write-Verbose "The overlay is $($KeyValuePair[1])."
                     $MemberProperties = @{
@@ -281,8 +270,7 @@ Function ConvertFrom-Cabrillo {
                 "CERTIFICATE"
                 {
                     If ($KeyValuePair[1] -NotIn @("YES", "NO")) {
-                        Write-Error -Category InvalidData "A CERTIFICATE tag was found with an invalid value!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("A CERTIFICATE tag was found with an invalid value!")
                     }
 
                     Write-Verbose "Found a certificate tag: $($KeyValuePair[1])"
@@ -342,8 +330,7 @@ Function ConvertFrom-Cabrillo {
                 {
                     If ($KeyValuePair[1] -NotMatch [regex]"[A-Za-z]{2}[0-9]{2}[A-Za-z]{2}")
                     {
-                        Write-Error -Category InvalidData -Message "The grid square $($KeyValuePair[1]) is invalid!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The grid square $($KeyValuePair[1]) is invalid!")
                     }
 
                     Write-Verbose "The Maidenhead grid square is $($KeyValuePair[1])."
@@ -372,8 +359,7 @@ Function ConvertFrom-Cabrillo {
                 "NAME"
                 {
                     If ($KeyValuePair[1].Length -gt 75) {
-                        Write-Error -Category InvalidData "The operator's name cannot exceed 75 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The operator's name cannot exceed 75 characters!")
                     }
 
                     Write-Verbose "The operator's name is $($KeyValuePair[1])."
@@ -388,8 +374,7 @@ Function ConvertFrom-Cabrillo {
                 "ADDRESS"
                 {
                     If ($KeyValuePair[1].Length -gt 45) {
-                        Write-Error -Category InvalidData "Address lines cannot exceed 45 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("Address lines cannot exceed 45 characters!")
                     }
 
                     Write-Verbose "A mailing address line is $($KeyValuePair[1])."
@@ -411,8 +396,7 @@ Function ConvertFrom-Cabrillo {
                 "ADDRESS-CITY"
                 {
                     If ($KeyValuePair[1].Length -gt 45) {
-                        Write-Error -Category InvalidData "Address lines cannot exceed 45 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("Address lines cannot exceed 45 characters!")
                     }
 
                     Write-Verbose "The mailing address's city is $($KeyValuePair[1])."
@@ -427,8 +411,7 @@ Function ConvertFrom-Cabrillo {
                 "ADDRESS-STATE-PROVINCE"
                 {
                     If ($KeyValuePair[1].Length -gt 45) {
-                        Write-Error -Category InvalidData "Address lines cannot exceed 45 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("Address lines cannot exceed 45 characters!")
                     }
 
                     Write-Verbose "The mailing address's state/province is $($KeyValuePair[1])."
@@ -438,15 +421,27 @@ Function ConvertFrom-Cabrillo {
                     }
 
                     Add-Member -InputObject $CabrilloObject @MemberProperties
-                    Add-Member -InputObject $CabrilloObject -Type AliasProperty -Name "AddressStateProvince" -Value "AddressState"
-                    Add-Member -InputObject $CabrilloObject -Type AliasProperty -Name "AddressStateProvince" -Value "AddressProvince"
+
+                    $MemberProperties = @{
+                        "Type"  = "AliasProperty"
+                        "Value" = "AddressStateProvince"
+                    }
+
+                    If ($null -eq $CabrilloObject.AddressState)
+                    {
+                        Add-Member -InputObject $CabrilloObject @MemberProperties -Name "AddressState"
+                    }
+                    If ($null -eq $CabrilloObject.AddressProvince)
+                    {
+                        Add-Member -InputObject $CabrilloObject @MemberProperties -Name "AddressProvince"
+                    }
+
                 }
 
                 "ADDRESS-POSTALCODE"
                 {
                     If ($KeyValuePair[1].Length -gt 45) {
-                        Write-Error -Category InvalidData "Address lines cannot exceed 45 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("Address lines cannot exceed 45 characters!")
                     }
 
                     Write-Verbose "The mailing address's postal code is $($KeyValuePair[1])."
@@ -461,8 +456,7 @@ Function ConvertFrom-Cabrillo {
                 "ADDRESS-COUNTRY"
                 {
                     If ($KeyValuePair[1].Length -gt 45) {
-                        Write-Error -Category InvalidData "Address lines cannot exceed 45 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("Address lines cannot exceed 45 characters!")
                     }
 
                     Write-Verbose "The mailing address's country is $($KeyValuePair[1])."
@@ -477,8 +471,7 @@ Function ConvertFrom-Cabrillo {
                 "OPERATORS"
                 {
                     If ($KeyValuePair[1].Length -gt 75) {
-                        Write-Error -Category InvalidData "Operator lines cannot exceed 75 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("Operator lines cannot exceed 75 characters!")
                     }
 
                     Write-Verbose "Found an operator line: $($KeyValuePair[1])"
@@ -497,8 +490,7 @@ Function ConvertFrom-Cabrillo {
                 "OFFTIME"
                 {
                     If ($KeyValuePair[1] -NotMatch "(?:\d{4}-[01]\d-[0-3]\d [012]\d{3}\s?){2}") {
-                        Write-Error -Category InvalidData "This does not appear to be a well-formed OFFTIME."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("This does not appear to be a well-formed OFFTIME.")
                     }
 
                     Write-Verbose "Found an offtime: $($KeyValuePair[1])"
@@ -519,15 +511,14 @@ Function ConvertFrom-Cabrillo {
                 "SOAPBOX"
                 {
                     If ($KeyValuePair[1].Length -gt 75) {
-                        Write-Error -Category InvalidData "A SOAPBOX comment cannot exceed 75 characters!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("A SOAPBOX comment cannot exceed 75 characters!")
                     }
 
                     Write-Verbose "Found a comment: $($KeyValuePair[1])"
-                    If ($null -eq $Cabrillo.Soapboxes)
+                    If ($null -eq $CabrilloObject.Soapboxes)
                     {
                         Add-Member -InputObject $CabrilloObject -NotePropertyName "Soapboxes" -NotePropertyValue @()
-                        Add-Member -InputObject $CabrilloObject -Type AliasProperty -Name "Soapboxes" -Value "Comments"
+                        Add-Member -InputObject $CabrilloObject -Type AliasProperty -Name "Comments" -Value "Soapboxes"
                     }
 
                     $CabrilloObject.Soapboxes += $KeyValuePair[1]
@@ -551,8 +542,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose " - Found a frequency tag: $freq"
                     If (([int]$freq) -IsNot [int] -and $freq -NotIn $ValidFrequencies)
                     {
-                        Write-Error -Category InvalidData "QSO frequencies must be a number or a defined band!"
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("QSO frequencies must be a number or a defined band!")
                     }
                     Else
                     {
@@ -568,8 +558,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose " - Found a transmitting mode tag: $mo"
                     If ($mo -NotIn @("CW", "PH", "FM", "RY", "DG"))
                     {
-                        Write-Error -Category InvalidData "The mode $mo was not an accepted mode."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The mode $mo was not an accepted mode.")
                     }
                     Else
                     {
@@ -585,8 +574,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose " - Found a date tag: $date"
                     If ($date -NotMatch [RegEx]::"\d{4}-[01]\d-[0-3]\d")
                     {
-                        Write-Error -Category InvalidData -Message "The date was not formatted correctly."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The date was not formatted correctly.")
                     }
                     Else
                     {
@@ -606,8 +594,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose " - Found a time tag: $time"
                     If ($time -NotMatch [RegEx]::"[0-2]\d[0-5]\d")
                     {
-                        Write-Error -Category InvalidData -Message "The time was not formatted correctly."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The time was not formatted correctly.")
                     }
                     Else
                     {
@@ -627,8 +614,7 @@ Function ConvertFrom-Cabrillo {
                     Write-Verbose " - Found a call: $call"
                     If ($call -NotMatch [RegEx]::"[A-Z0-9\/]+")
                     {
-                        Write-Error -Category InvalidData -Message "The date was not formatted correctly."
-                        Exit
+                        Throw [System.IO.InvalidDataException]::new("The date was not formatted correctly.")
                     }
                     Else
                     {
@@ -655,8 +641,11 @@ Function ConvertFrom-Cabrillo {
                     $t = ($exchAndT -Split " ",-2)[1]
                     If ($t -ne "0" -and $t -ne "1")
                     {
-                        Write-Error -Category InvalidData -Message "The transmitter ID is not an accepted value."
-                        Exit
+                        Write-Warning "Found a QSO record without a valid transmitter ID.  This Cabrillo file is not well-formed."
+                        If (-Not $NoTransmitterIDCheck)
+                        {
+                            Throw [System.IO.InvalidDataException]::new("The transmitter ID is not an accepted value.")
+                        }
                     }
                     Else
                     {
@@ -706,8 +695,7 @@ Function ConvertFrom-Cabrillo {
                 }
 
                 default {
-                    Write-Error -Category InvalidData -Message "An invalid tag, $($KeyValuePair[0]), was found."
-                    Exit
+                    Throw [System.IO.InvalidDataException]::new("An invalid tag, $($KeyValuePair[0]), was found.")
                 }
             }
         }
@@ -718,7 +706,7 @@ Function ConvertFrom-Cabrillo {
     {
         If (-Not $script:ReachedEndOfLog)
         {
-            Write-Error -Category InvalidData -Message "Cabrillo logs must end with END-OF-LOG:"
+            Throw [System.IO.InvalidDataException]::new("Cabrillo logs must end with END-OF-LOG:")
         }
         Return $CabrilloObject
     }
