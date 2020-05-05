@@ -1,3 +1,5 @@
+![PSCabrillo logo](https://github.com/rhymeswithmogul/PSCabrillo/raw/master/logo/GitHub%20social%20preview.png)
+
 # PSCabrillo
 This is a PowerShell 7 module to parse Cabrillo 3.0 contest logs.  It converts
 them into native PowerShell `PSCustomObject`s that you can parse in your own app.
