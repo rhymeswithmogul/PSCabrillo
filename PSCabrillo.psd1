@@ -55,7 +55,11 @@ ScriptsToProcess = @()
 TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-FormatsToProcess = @()
+FormatsToProcess = @(
+    "CabrilloLog.List.Format.ps1xml",
+    "CabrilloLog.Table.Format.ps1xml",
+    "CabrilloLog.Wide.Format.ps1xml"
+)
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 NestedModules = @()
@@ -81,11 +85,13 @@ ModuleList = @()
 # List of all files packaged with this module
 FileList = @(
     "AUTHORS",
+    "CabrilloLog.List.Format.ps1xml",
+    "CabrilloLog.Table.Format.ps1xml",
+    "CabrilloLog.Wide.Format.ps1xml",
     "CHANGELOG",
     "LICENSE",
     "NEWS",
     "README.md",
-    "tests/cqwwrtty.com-sample.cbr3",
     "PSCabrillo.psd1",
     "PSCabrillo.psm1"
 )

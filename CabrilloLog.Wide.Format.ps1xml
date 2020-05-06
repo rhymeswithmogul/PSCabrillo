@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<ViewDefinitions>
+		<View>
+			<Name>PSCabrillo.CabrilloLog</Name>
+			<ViewSelectedBy>
+				<TypeName>PSCabrillo.CabrilloLog</TypeName>
+			</ViewSelectedBy>
+			<WideControl>
+				<WideEntries>
+					<WideEntry>
+						<WideItem>
+							<PropertyName>QSO</PropertyName>
+						</WideItem>
+					</WideEntry>
+				</WideEntries>
+			</WideControl>
+		</View>
+	</ViewDefinitions>
+</Configuration>

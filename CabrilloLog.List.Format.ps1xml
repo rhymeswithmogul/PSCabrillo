@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<ViewDefinitions>
+		<View>
+			<Name>PSCabrillo.CabrilloLog</Name>
+			<ViewSelectedBy>
+				<TypeName>PSCabrillo.CabrilloLog</TypeName>
+			</ViewSelectedBy>
+			<ListControl>
+				<ListEntries>
+					<ListEntry>
+						<ListItems>
+							<ListItem>
+								<Label>Contest</Label>
+								<PropertyName>Contest</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Call Sign</Label>
+								<PropertyName>CallSign</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Operator Type</Label>
+								<PropertyName>CategoryOperator</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Assisted?</Label>
+								<PropertyName>CategoryAssisted</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Band</Label>
+								<PropertyName>CategoryBand</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Power</Label>
+								<PropertyName>CategoryPower</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Station</Label>
+								<PropertyName>CategoryStation</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Time</Label>
+								<PropertyName>CategoryTime</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Mode</Label>
+								<PropertyName>CategoryMode</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Transmitter</Label>
+								<PropertyName>CategoryTransmitter</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Overlay</Label>
+								<PropertyName>CategoryOverlay</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>Claimed Score</Label>
+								<PropertyName>ClaimedScore</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>Club</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>Location</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>Name</PropertyName>
+							</ListItem>
+							<ListItem>
+                <Label>Grid Square</Label>
+								<PropertyName>Location</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>Operators</PropertyName>
+							</ListItem>
+							<ListItem>
+								<Label>QSO's</Label>
+								<PropertyName>QSO</PropertyName>
+							</ListItem>
+						</ListItems>
+					</ListEntry>
+				</ListEntries>
+			</ListControl>
+		</View>
+	</ViewDefinitions>
+</Configuration>

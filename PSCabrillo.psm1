@@ -20,7 +20,7 @@
 
 Function ConvertFrom-Cabrillo {
     [CmdletBinding(DefaultParameterSetName = "FromStrings")]
-    [OutputType([PSCustomObject])]
+    [OutputType([PSCabrillo.CabrilloLog])]
 
     Param(
         [Parameter(
@@ -137,7 +137,7 @@ Function ConvertFrom-Cabrillo {
                     }
                     $MemberProperties = @{
                         "NotePropertyName"  = "CategoryAssisted"
-                        "NotePropertyValue" = $KeyValuePair[1]
+                        "NotePropertyValue" = $KeyValuePair[1] -eq "ASSISTED"
                     }
                     Add-Member -InputObject $CabrilloObject @MemberProperties
                 }
@@ -708,6 +708,9 @@ Function ConvertFrom-Cabrillo {
         {
             Throw [System.IO.InvalidDataException]::new("Cabrillo logs must end with END-OF-LOG:")
         }
+
+        # Add our custom type to the object, then return it.
+        $CabrilloObject.PSObject.TypeNames.Insert(0, "PSCabrillo.CabrilloLog")
         Return $CabrilloObject
     }
 }
